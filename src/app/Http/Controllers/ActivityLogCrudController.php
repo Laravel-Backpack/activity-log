@@ -48,7 +48,7 @@ class ActivityLogCrudController extends CrudController
             'name' => 'causer',
             'label' => ucfirst(__('backpack.activity-log::activity_log.causer')),
             'type' => 'text',
-            'value' => fn($entry) => $entry->causer->{$entry->causer->identifiableAttribute()},
+            'value' => fn($entry) => $entry->causer ? $entry->causer->{$entry->causer->identifiableAttribute()} : '',
             'wrapper' => [
                 'href' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->causer) ?? '',
                 'element' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->causer) ? 'a' : 'span',
