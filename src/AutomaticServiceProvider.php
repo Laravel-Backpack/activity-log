@@ -2,6 +2,8 @@
 
 namespace Backpack\ActivityLog;
 
+use Backpack\CRUD\ViewNamespaces;
+
 /**
  * This trait automatically loads package stuff, if they're present
  * in the expected directory. Stick to the conventions and
@@ -22,6 +24,16 @@ trait AutomaticServiceProvider
      * SERVICE PROVIDER DEFAULTS
      * -------------------------
      */
+
+    /**
+     * Boot method may be overrided by AddonServiceProvider
+     *
+     * @return void
+     */
+    public function boot(): void
+    {
+        $this->autoboot();
+    }
 
     /**
      * Perform post-registration booting of services.
@@ -45,6 +57,13 @@ trait AutomaticServiceProvider
 
             // Fallback to package views
             $this->loadViewsFrom($this->packageViewsPath(), $this->vendorNameDotPackageName());
+
+            // Add default ViewNamespaces
+            foreach (['buttons', 'columns', 'fields', 'filters', 'widgets'] as $viewNamespace) {
+                if ($this->packageDirectoryExistsAndIsNotEmpty("resources/views/$viewNamespace")) {
+                    ViewNamespaces::addFor($viewNamespace, $this->vendorNameDotPackageName()."::{$viewNamespace}");
+                }
+            }
         }
 
         if ($this->packageDirectoryExistsAndIsNotEmpty('database/migrations')) {
