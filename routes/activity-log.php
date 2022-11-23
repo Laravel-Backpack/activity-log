@@ -1,6 +1,6 @@
 <?php
 
-use Backpack\ActivityLog\app\Http\Controllers\ActivityLogCrudController;
+use Backpack\ActivityLog\Http\Controllers\ActivityLogCrudController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +12,7 @@ use Backpack\ActivityLog\app\Http\Controllers\ActivityLogCrudController;
 |
 */
 Route::group([
-    'namespace' => 'Backpack\ActivityLog\app\Http\Controllers',
+    'namespace' => 'Backpack\ActivityLog\Http\Controllers',
     'prefix' => config('backpack.base.route_prefix', 'admin'),
     'middleware' => ['web', config('backpack.base.middleware_key', 'admin')],
 ], function () {

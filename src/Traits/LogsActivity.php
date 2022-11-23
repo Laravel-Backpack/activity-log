@@ -1,6 +1,6 @@
 <?php
 
-namespace Backpack\ActivityLog\app\Traits;
+namespace Backpack\ActivityLog\Traits;
 
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity as OriginalLogsActivity;

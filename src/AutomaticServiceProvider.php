@@ -53,7 +53,9 @@ trait AutomaticServiceProvider
 
         if ($this->packageDirectoryExistsAndIsNotEmpty('resources/views')) {
             // Load published views
-            $this->loadViewsFrom($this->publishedViewsPath(), $this->vendorNameDotPackageName());
+            if (is_dir($this->publishedViewsPath())) {
+                $this->loadViewsFrom($this->publishedViewsPath(), $this->vendorNameDotPackageName());
+            }
 
             // Fallback to package views
             $this->loadViewsFrom($this->packageViewsPath(), $this->vendorNameDotPackageName());

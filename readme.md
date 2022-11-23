@@ -48,7 +48,7 @@ Inside all the Models you want to be logged, add the usage of the `LogsActivity`
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-+use Backpack\ActivityLog\app\Traits\LogsActivity;
++use Backpack\ActivityLog\Traits\LogsActivity;
 
 class Article extends Model
 {

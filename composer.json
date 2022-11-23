@@ -1,7 +1,7 @@
 {
     "name": "backpack/activity-log",
     "description": "Activity Log for Backpack",
-    "license": "EULA",
+    "license": "MIT",
     "authors": [
         {
             "name": "Antonio Almeida",
@@ -19,7 +19,7 @@
         "Laravel", "Backpack", "Backpack for Laravel", "Backpack Addon", "ActivityLog"
     ],
     "require": {
-        "backpack/crud": "^5.0",
+        "backpack/crud": "^5.3.13",
         "spatie/laravel-activitylog": "^4.7"
     },
     "require-dev": {
@@ -44,11 +44,6 @@
             "providers": [
                 "Backpack\\ActivityLog\\ActivityLogServiceProvider"
             ]
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true
         }
     }
 }

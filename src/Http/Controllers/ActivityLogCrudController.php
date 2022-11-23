@@ -1,8 +1,8 @@
 <?php
 
-namespace Backpack\ActivityLog\app\Http\Controllers;
+namespace Backpack\ActivityLog\Http\Controllers;
 
-use Backpack\ActivityLog\app\Models\ActivityLog;
+use Backpack\ActivityLog\Models\ActivityLog;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Exception;
@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 /**
  * Class ActivityLogCrudController
- * @package App\Http\Controllers
+ * @package Backpack\ActivityLog\Http\Controllers
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
 class ActivityLogCrudController extends CrudController
