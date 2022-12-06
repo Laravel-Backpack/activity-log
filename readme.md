@@ -2,39 +2,41 @@
 
 [![The Whole Fruit Manifesto](https://img.shields.io/badge/writing%20standard-the%20whole%20fruit-brightgreen)](https://github.com/the-whole-fruit/manifesto)
 
-This package adds an _activity log_ CRUD for projects that use [Backpack for Laravel](https://backpackforlaravel.com/) v5.  
-This packages relies on Spatie `laravel-activitylog` package, if you need further information on how to use it, head to https://spatie.be/docs/laravel-activitylog/.
+This package adds a web interface that shows the activity log for projects that use [Backpack for Laravel](https://backpackforlaravel.com/). It relies on Spatie `laravel-activitylog` package, if you need further information on how to use it, head to https://spatie.be/docs/laravel-activitylog/.
 
-## Demo
+How does it all work? Well:
+- when a change happens to an Eloquent model, the Spatie package will make a note of it in the database (log it);
+- this package adds a web interface, so the admin can see the changes (aka activity log);
 
-Don't belive how simple it is to use? Go ahead, try it right now, in [our online demo](https://demo.backpackforlaravel.com/admin/activity-log).  
-Edit some other entities, and check the [activity logs](https://demo.backpackforlaravel.com/admin/activity-log) page to see the changes.
+## Preview
+
+![](https://user-images.githubusercontent.com/1032474/205863022-827f3248-a9f3-4d05-896f-5fa7a40227be.gif)
+
+Don't belive how simple it is to use? Go ahead, try it right now, in [our online demo](https://demo.backpackforlaravel.com/admin/activity-log).  Edit some other entities, and check the [activity logs](https://demo.backpackforlaravel.com/admin/activity-log) page to see the changes.
 
 ## Installation
 
-In your Laravel + Backpack project, install the package:
+> Before official release, you need to add this to your `composer.json`'s `repositories` section before you can install it, because the package hasn't been submitted to Packagist yet. This step should be removed before official release. 
+> 
+        {
+            "type": "vcs",
+            "url": "git@github.com:Laravel-Backpack/activity-log.git"
+        }
+
+In your Laravel + Backpack project:
 
 ```bash
+# install the package
 composer require backpack/activity-log
-```
 
-Publish and run the migrations:
-
-```bash
+# publish and run the migrations
 php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-migrations"
-
 php artisan migrate
-```
 
-*Optional*, publish the config file:
-
-```bash
+# optional: publish the config file
 php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-config"
-```
 
-*Optional*, add a sidebar entry item for the Activity Logs page:
-
-```bash
+# optional: add a sidebar entry item for the Activity Logs page
 php artisan backpack:add-sidebar-content "<li class='nav-item'><a class='nav-link' href='{{ backpack_url('activity-log') }}'><i class='nav-icon la la-stream'></i> Activity Logs</a></li>"
 ```
 
@@ -56,6 +58,13 @@ class Article extends Model
 +   use LogsActivity;
     ...
 ```
+
+## Customization
+
+TODO: questions to answer:
+- What gets logged by default?
+- How do you customize what gets logged?
+- How do you customize the interface, if needed?
 
 ## Security
 
