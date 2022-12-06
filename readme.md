@@ -5,7 +5,7 @@
 This package adds a web interface that shows the activity log for projects that use [Backpack for Laravel](https://backpackforlaravel.com/). It relies on Spatie `laravel-activitylog` package, if you need further information on how to use it, head to https://spatie.be/docs/laravel-activitylog/.
 
 How does it all work? Well:
-- when a change happens to an Eloquent model, the Spatie package will make a note of it in the database (log it);
+- when a change happens to an Eloquent model, the Spatie package will make a note of it in the database;
 - this package adds a web interface, so the admin can see the changes (aka activity log);
 
 ## Preview
