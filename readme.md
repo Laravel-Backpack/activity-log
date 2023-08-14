@@ -37,7 +37,7 @@ php artisan migrate
 php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-config"
 
 # optional: add a menu item for the Activity Logs page
-php artisan backpack:add-menu-content "<x-backpack::menu-item title='Activity Logs' icon='la la-stream' :link=\"backpack_url('activity-log')\" />"
+php artisan backpack:add-menu-content "<x-backpack::menu-item title=\"Activity Logs\" icon=\"la la-stream\" :link=\"backpack_url('activity-log')\" />"
 ```
 
 ## Usage
