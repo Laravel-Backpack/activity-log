@@ -294,11 +294,12 @@ class ActivityLogCrudController extends CrudController
         return ActivityLog::select("{$morphField}_type")
             ->distinct()
             ->pluck("{$morphField}_type")
+            ->filter(fn($type) => class_exists($type))
             ->map(function ($type) use ($term) {
                 $model = new $type();
                 return $model
                     ->where($model->identifiableAttribute(), 'like', "%{$term}%")
-                    ->pluck('name', 'id')
+                    ->pluck($model->identifiableAttribute(), $model->getKeyName())
                     ->mapWithKeys(fn($value, $id) => ["$type,$id" => $value])
                     ->filter();
             })
