@@ -7,6 +7,7 @@ use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -169,7 +170,7 @@ class ActivityLogCrudController extends CrudController
             return ActivityLog::select('causer_type')
                 ->distinct()
                 ->pluck('causer_type', 'causer_type')
-                ->map(fn($entry) => Str::of($entry)->afterLast('\\'))
+                ->map(fn($entry) => Str::of($entry)->afterLast('\\')->ucfirst())
                 ->toArray();
         }, function ($value) {
             CRUD::addClause('where', 'causer_type', $value);
@@ -201,7 +202,7 @@ class ActivityLogCrudController extends CrudController
             return ActivityLog::select('subject_type')
                 ->distinct()
                 ->pluck('subject_type', 'subject_type')
-                ->map(fn($entry) => Str::of($entry)->afterLast('\\'))
+                ->map(fn($entry) => Str::of($entry)->afterLast('\\')->ucfirst())
                 ->toArray();
         }, function ($value) {
             CRUD::addClause('where', 'subject_type', $value);
@@ -294,13 +295,19 @@ class ActivityLogCrudController extends CrudController
         return ActivityLog::select("{$morphField}_type")
             ->distinct()
             ->pluck("{$morphField}_type")
-            ->filter(fn($type) => class_exists($type))
             ->map(function ($type) use ($term) {
+                $type = Relation::getMorphedModel($type) ?? $type;
+
+                if (! class_exists($type)) {
+                    return;
+                }
+
                 $model = new $type();
                 return $model
                     ->where($model->identifiableAttribute(), 'like', "%{$term}%")
+                    ->limit(5)
                     ->pluck($model->identifiableAttribute(), $model->getKeyName())
-                    ->mapWithKeys(fn($value, $id) => ["$type,$id" => $value])
+                    ->mapWithKeys(fn($value, $id) => ["$type,$id" => Str::limit($value, 28)])
                     ->filter();
             })
             ->flatMap(fn($entry) => $entry)
