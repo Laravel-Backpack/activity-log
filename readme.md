@@ -59,6 +59,23 @@ class Article extends Model
     ...
 ```
 
+If you want to show the activity log shortcut button on crud, enable each button with:
+
+```diff
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+...
+
+class ExampleCrudController extends CrudController
+{
+    ...
++    use \Backpack\ActivityLog\Http\Controllers\Operations\ShowModelActivityLogsOperation;
++    use \Backpack\ActivityLog\Http\Controllers\Operations\ShowEntryActivityLogsOperation;
+    ...
+```
+
 ## Customization
 
 TODO: questions to answer:
