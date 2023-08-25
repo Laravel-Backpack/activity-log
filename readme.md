@@ -16,6 +16,13 @@ Don't belive how simple it is to use? Go ahead, try it right now, in [our online
 
 ## Installation
 
+> Before official release, you need to add this to your `composer.json`'s `repositories` section before you can install it, because the package hasn't been submitted to Packagist yet. This step should be removed before official release.
+>
+        {
+            "type": "vcs",
+            "url": "git@github.com:Laravel-Backpack/activity-log.git"
+        }
+
 In your Laravel + Backpack project:
 
 ```bash
@@ -29,8 +36,8 @@ php artisan migrate
 # optional: publish the config file
 php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-config"
 
-# optional: add a sidebar entry item for the Activity Logs page
-php artisan backpack:add-sidebar-content "<li class='nav-item'><a class='nav-link' href='{{ backpack_url('activity-log') }}'><i class='nav-icon la la-stream'></i> Activity Logs</a></li>"
+# optional: add a menu item for the Activity Logs page
+php artisan backpack:add-menu-content "<x-backpack::menu-item title=\"Activity Logs\" icon=\"la la-stream\" :link=\"backpack_url('activity-log')\" />"
 ```
 
 ## Usage
@@ -148,7 +155,7 @@ If you discover any security related issues, please email cristian.tabacitu@back
 
 ## License
 
-This project was released under EULA, so you can install it on top of any Backpack & Laravel project. Please see the [license file](license.md) for more information. 
+This project was released under EULA, so you can install it on top of any Backpack & Laravel project. Please see the [license file](license.md) for more information.
 
 [ico-version]: https://img.shields.io/packagist/v/backpack/activity-log.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/backpack/activity-log.svg?style=flat-square
