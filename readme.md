@@ -140,6 +140,11 @@ public function getActivitylogOptions(): LogOptions
 }
 ```
 
+#### Can I customize the logs even further?
+
+Yes, you can! The Spatie laravel-activitylog package offers a range of advanced customization options.
+For detailed insights into these options, check out the official Log Options documentation by Spatie, at https://spatie.be/docs/laravel-activitylog/v4/api/log-options
+
 ## Security
 
 If you discover any security related issues, please email cristian.tabacitu@backpackforlaravel.com instead of using the issue tracker.
