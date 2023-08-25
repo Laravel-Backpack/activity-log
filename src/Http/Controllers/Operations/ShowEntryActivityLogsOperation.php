@@ -14,7 +14,7 @@ trait ShowEntryActivityLogsOperation
         CRUD::allowAccess('logsActivityOperation');
 
         CRUD::operation(['list', 'show'], function () {
-            CRUD::addButton('line', 'view_entry_logs', 'view', 'backpack.activity-log::buttons.view_subject_entry_logs');
+            CRUD::addButton('line', 'view_subject_entry_logs', 'view', 'backpack.activity-log::buttons.view_subject_entry_logs');
         });
     }
 }

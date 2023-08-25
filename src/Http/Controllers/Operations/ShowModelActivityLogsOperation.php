@@ -14,7 +14,7 @@ trait ShowModelActivityLogsOperation
         CRUD::allowAccess('logsActivityOperation');
 
         CRUD::operation(['list', 'show'], function () {
-            CRUD::addButton('top', 'view_model_logs', 'view', 'backpack.activity-log::buttons.view_subject_model_logs');
+            CRUD::addButton('top', 'view_subject_model_logs', 'view', 'backpack.activity-log::buttons.view_subject_model_logs');
         });
     }
 }
