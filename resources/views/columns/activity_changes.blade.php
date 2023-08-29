@@ -4,7 +4,7 @@ $values = $column['value'] ?? data_get($entry, $column['name']);
 $old = isset($values['old']);
 @endphp
 
-<table class="table table-sm" style="max-width: 480px">
+<table class="table table-sm table-bordered table-hover">
     <tr>
         <th>{{ ucfirst(__('backpack.activity-log::activity_log.key')) }}</th>
         @if($old)
@@ -17,9 +17,9 @@ $old = isset($values['old']);
     <tr>
         <td class="font-weight-bold">{{ str_replace('_', ' ', ucfirst(__($key))) }}</td>
         @if($old)
-        <td>
+        <td class="{{ ($values['old'][$key] != $new) ? 'text-danger' : '' }}">
             @if (is_array($values['old'][$key]))
-                <ul class="pl-1" style="list-style: circle">
+                <ul class="pl-3" style="list-style: circle">
                 @foreach ($values['old'][$key] as $attribute => $value)
                     <li><strong>{{ $attribute }}</strong>: {{ $value }}</li>
                 @endforeach
@@ -29,7 +29,7 @@ $old = isset($values['old']);
             @endif
         </td>
         @endif
-        <td>{{ $new }}</td>
+        <td class="{{ ($values['old'][$key] != $new) ? 'text-success' : '' }}">{{ $new }}</td>
     </tr>
     @endif
     @endforeach
