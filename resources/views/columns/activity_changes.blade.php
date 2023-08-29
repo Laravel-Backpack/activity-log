@@ -29,7 +29,17 @@ $old = isset($values['old']);
             @endif
         </td>
         @endif
-        <td class="{{ ($values['old'][$key] != $new) ? 'text-success' : '' }}">{{ $new }}</td>
+        <td class="{{ ($values['old'][$key] != $new) ? 'text-success' : '' }}">
+            @if (is_array($new))
+            <ul class="pl-3" style="list-style: circle">
+                @foreach ($new as $attribute => $value)
+                <li><strong>{{ $attribute }}</strong>: {{ $value }}</li>
+                @endforeach
+            </ul>
+            @else
+            {{ $new }}
+            @endif
+        </td>
     </tr>
     @endif
     @endforeach
