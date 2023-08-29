@@ -15,9 +15,19 @@ $old = isset($values['old']);
     @foreach(($values['attributes'] ?? []) as $key => $new)
     @if(!in_array($key, ['id', 'deleted_at']))
     <tr>
-        <td>{{ str_replace('_', ' ', ucfirst(__($key))) }}</td>
+        <td class="font-weight-bold">{{ str_replace('_', ' ', ucfirst(__($key))) }}</td>
         @if($old)
-        <td>{{ $values['old'][$key] }}</td>
+        <td>
+            @if (is_array($values['old'][$key]))
+                <ul class="pl-1" style="list-style: circle">
+                @foreach ($values['old'][$key] as $attribute => $value)
+                    <li><strong>{{ $attribute }}</strong>: {{ $value }}</li>
+                @endforeach
+                </ul>
+            @else
+                {{ $values['old'][$key] }}
+            @endif
+        </td>
         @endif
         <td>{{ $new }}</td>
     </tr>
