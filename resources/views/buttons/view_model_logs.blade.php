@@ -1,5 +1,5 @@
 @inject('helper', 'Backpack\ActivityLog\Helpers\ActivityLogHelper')
 
-<a href="{{ $helper->getCauserButtonUrl($crud->model) }}" class="btn btn-primary">
+<a href="{{ $helper->getButtonUrl($crud->model, $crud->get('activity-log.options') ?? \Backpack\ActivityLog\Models\ActivityLog::SUBJECT) }}" class="btn btn-primary">
     <span><i class="la la-stream"></i> {{ ucfirst(__('backpack.activity-log::activity_log.activity_logs')) }}</span>
 </a>

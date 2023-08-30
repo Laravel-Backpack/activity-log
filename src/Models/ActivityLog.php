@@ -8,4 +8,7 @@ use Spatie\Activitylog\Models\Activity;
 class ActivityLog extends Activity
 {
     use CrudTrait;
+
+    public const CAUSER = 1;
+    public const SUBJECT = 2;
 }
