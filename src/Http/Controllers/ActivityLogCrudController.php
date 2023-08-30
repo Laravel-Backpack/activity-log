@@ -49,7 +49,7 @@ class ActivityLogCrudController extends CrudController
             'name' => 'causer',
             'label' => ucfirst(__('backpack.activity-log::activity_log.causer')),
             'type' => 'text',
-            'value' => fn($entry) => $entry->causer ? $entry->causer->{$entry->causer->identifiableAttribute()} : '',
+            'value' => fn($entry) => $entry->causer && method_exists($entry->causer, 'identifiableAttribute') ? $entry->causer->{$entry->causer->identifiableAttribute()} : '',
             'wrapper' => [
                 'href' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->causer) ?? '',
                 'element' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->causer) ? 'a' : 'span',
@@ -85,7 +85,7 @@ class ActivityLogCrudController extends CrudController
             'name' => 'subject',
             'label' => ucfirst(__('backpack.activity-log::activity_log.subject')),
             'type' => 'text',
-            'value' => fn($entry) => $entry->subject ? $entry->subject->{$entry->subject->identifiableAttribute()} : '',
+            'value' => fn($entry) => $entry->subject && method_exists($entry->subject, 'identifiableAttribute')  ? $entry->subject->{$entry->subject->identifiableAttribute()} : '',
             'wrapper' => [
                 'href' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->subject) ?? '',
                 'element' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->subject) ? 'a' : 'span',
