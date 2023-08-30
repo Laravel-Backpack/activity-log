@@ -109,6 +109,8 @@ class ActivityLogCrudController extends CrudController
     {
         $this->setupListOperation();
 
+        CRUD::set('show.contentClass','col-md-12');
+
         CRUD::addColumn([
             'name' => 'causer_type',
             'label' => ucfirst(__('backpack.activity-log::activity_log.causer_model')),
