@@ -85,7 +85,7 @@ class ActivityLogCrudController extends CrudController
             'name' => 'subject',
             'label' => ucfirst(__('backpack.activity-log::activity_log.subject')),
             'type' => 'text',
-            'value' => fn($entry) => $entry->subject && method_exists($entry->subject, 'identifiableAttribute')  ? $entry->subject->{$entry->subject->identifiableAttribute()} : '',
+            'value' => fn($entry) => $entry->subject && method_exists($entry->subject, 'identifiableAttribute') ? $entry->subject->{$entry->subject->identifiableAttribute()} : '',
             'wrapper' => [
                 'href' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->subject) ?? '',
                 'element' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->subject) ? 'a' : 'span',
@@ -109,7 +109,7 @@ class ActivityLogCrudController extends CrudController
     {
         $this->setupListOperation();
 
-        CRUD::set('show.contentClass','col-md-12');
+        CRUD::set('show.contentClass', 'col-md-12');
 
         CRUD::addColumn([
             'name' => 'causer_type',
@@ -298,13 +298,13 @@ class ActivityLogCrudController extends CrudController
             ->distinct()
             ->pluck("{$morphField}_type")
             ->map(function ($type) use ($term) {
-                $type = Relation::getMorphedModel($type) ?? $type;
+                $typeClass = Relation::getMorphedModel($type) ?? $type;
 
-                if (! class_exists($type)) {
+                if (! class_exists($typeClass)) {
                     return;
                 }
 
-                $model = new $type();
+                $model = new $typeClass();
                 return $model
                     ->where($model->identifiableAttribute(), 'like', "%{$term}%")
                     ->limit(5)

@@ -15,19 +15,22 @@ class ActivityLogHelper
      * @param boolean $isEntry
      * @return string
      */
-    public function getButtonUrl(Model $model, int $keys): string
+    public function getButtonUrl(Model $model, ?int $keys): string
     {
         $query = [];
         $class = $model->getMorphClass();
+
+        $keys ??= ActivityLog::SUBJECT;
+
         $options = [
             ActivityLog::CAUSER => 'causer',
             ActivityLog::SUBJECT => 'subject',
         ];
 
         foreach ($options as $option => $key) {
-            if ($keys &$option) {
-                $query["{$key}_model"] = $class;
+            $query['combined'] = true;
 
+            if ($keys &$option) {
                 if ($model->id) {
                     $query = [
                         ...$query,
@@ -37,6 +40,8 @@ class ActivityLogHelper
                         ]),
                         "{$key}_text" => $model->{$model->identifiableAttribute()} ?? '',
                     ];
+                } else {
+                    $query["{$key}_model"] = $class;
                 }
             }
         }
