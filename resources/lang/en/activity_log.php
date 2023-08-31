@@ -6,8 +6,8 @@ return [
 
     'causer' => 'causer',
     'subject' => 'subject',
-    'causer_model' => 'causer model',
-    'subject_model' => 'subject model',
+    'causer_model' => 'causer type',
+    'subject_model' => 'subject type',
     'event' => 'event',
     'date' => 'date',
     'changes' => 'changes',
