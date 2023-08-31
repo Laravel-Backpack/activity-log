@@ -2,7 +2,7 @@
 
 [![The Whole Fruit Manifesto](https://img.shields.io/badge/writing%20standard-the%20whole%20fruit-brightgreen)](https://github.com/the-whole-fruit/manifesto)
 
-Ever wanted to see WHO changed WHAT inside your app? To remember all the DB changes your users have done? Then you're probably using [`spatie/laravel-activitylog`](https://github.com/spatie/laravel-activitylog). This package is a web interface for projects who use it. It gives your admin/superadmin the ability to see 
+Ever wanted to see WHO changed WHAT and WHEN inside your app? Want to remember all the DB changes your users have done? Well... this package doesn't do that. [`spatie/laravel-activitylog`](https://github.com/spatie/laravel-activitylog) does, and does it very well. This package adds a web interface for it, for projects using [Backpack for Laravel](https://backpackforlaravel.com/). It gives your admin/superadmin the ability to see 
 - the activities performed _by_ certain models;
 - the activities performed _on_ certain models;
 - and more;
@@ -15,11 +15,14 @@ How does it all work? Well:
 
 ![](https://user-images.githubusercontent.com/1032474/205863022-827f3248-a9f3-4d05-896f-5fa7a40227be.gif)
 
-Don't belive how simple it is to use? Go ahead, try it right now, in [our online demo](https://demo.backpackforlaravel.com/admin/activity-log).  Edit some other entities, and check the [activity logs](https://demo.backpackforlaravel.com/admin/activity-log) page to see the changes.
+
+## Demo
+
+Try it right now, in [our online demo](https://demo.backpackforlaravel.com/admin/activity-log).  Edit some entities, and check the [activity logs](https://demo.backpackforlaravel.com/admin/activity-log).
 
 ## Installation
 
-In your Laravel + Backpack project:
+In your Laravel + Backpack project, install this package:
 
 ```bash
 # install this interface package:
@@ -27,25 +30,32 @@ composer require backpack/activity-log
 
 # add a menu item for it
 php artisan backpack:add-menu-content "<x-backpack::menu-item title=\"Activity Logs\" icon=\"la la-stream\" :link=\"backpack_url('activity-log')\" />"
-
-
-# --------------------------------------------------------
-# IMPORTANT - Finish Installing spatie/laravel-activitylog
-# --------------------------------------------------------
-# If you haven't finished their installation process, before installing this interface, do it now.
-# You can follow the docs in https://spatie.be/docs/laravel-activitylog/v4/installation-and-setup
-# But we'll copy-paste the instructions here too, for your convenience:
+```
+But also, if your package didn't already have [`spatie/laravel-activitylog`](https://github.com/spatie/laravel-activitylog) installed and set up, please [follow the installation steps in their docs](https://spatie.be/docs/laravel-activitylog/v4/installation-and-setup). We'll also copy-paste them here, for your convenience:
+```bash
 php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-config"
 php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-migrations"
 php artisan migrate
-# --------------------------------------------------------
 ```
 
 ## Usage
 
-Your existing activities should show up right away, no extra configuration needed. If your models create activity logs, click the menu item and you'll see them in the interface. 
+> Note: If your models _are not_ configured to create activity logs yet, [read the FAQ on how to log all model events](#how-to-log-model-events-created-updated-deleted-etc). If you are unsure, then you have not configured them to log activities - read it.
 
-> If you haven't yet configured your models to create activity logs, read the FAQ below. We'll show you how to easily log all model events.
+
+### ActivityLog list view
+
+Use it to browse all activity, filter the view, search the view, etc:
+
+![Backpack ActivityLog list view](https://user-images.githubusercontent.com/1032474/264732691-b77f1585-08f0-4eb8-88aa-3b4226a65567.png)
+
+### ActivityLog show view
+
+Use it to see details about a particular activity:
+
+![Backpack ActivityLog show view](https://user-images.githubusercontent.com/1032474/264734509-b13b520f-a732-4f84-be1c-db136e5fa160.png)
+
+### CrudController operations
 
 If you want your CrudControllers to show links to their activities, just use one or both of the provided Backpack operations:
 - **ModelActivityOperation**: Displays a general button, allowing users to see a comprehensive list of all activities for that Model.  
