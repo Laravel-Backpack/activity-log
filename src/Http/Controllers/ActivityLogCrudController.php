@@ -46,6 +46,16 @@ class ActivityLogCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::addColumn([
+            'name' => 'causer_type',
+            'label' => ucfirst(__('backpack.activity-log::activity_log.causer_model')),
+            'type' => 'text',
+            'value' => fn ($entry) => $entry->causer ? Str::of(get_class($entry->causer))->afterLast('\\') : '',
+            'wrapper' => [
+                'title' => fn ($crud, $column, $entry) => $entry->causer ? get_class($entry->causer) : '',
+            ],
+        ]);
+
+        CRUD::addColumn([
             'name' => 'causer',
             'label' => ucfirst(__('backpack.activity-log::activity_log.causer')),
             'type' => 'text',
@@ -145,23 +155,6 @@ class ActivityLogCrudController extends CrudController
     public function setupFilters()
     {
         /**
-         * Event
-         */
-        CRUD::addFilter([
-            'name' => 'event',
-            'type' => 'select2',
-            'label' => ucfirst(__('backpack.activity-log::activity_log.event')),
-        ], function () {
-            return ActivityLog::select('event')
-                ->distinct()
-                ->pluck('event', 'event')
-                ->map(fn($entry) => ucfirst(__($entry)))
-                ->toArray();
-        }, function ($value) {
-            CRUD::addClause('where', 'event', $value);
-        });
-
-        /**
          * Causer Model
          */
         CRUD::addFilter([
@@ -192,6 +185,23 @@ class ActivityLogCrudController extends CrudController
                 CRUD::addClause('where', 'causer_type', $type);
                 CRUD::addClause('where', 'causer_id', $id);
             });
+
+        /**
+         * Event
+         */
+        CRUD::addFilter([
+            'name' => 'event',
+            'type' => 'select2',
+            'label' => ucfirst(__('backpack.activity-log::activity_log.event')),
+        ], function () {
+            return ActivityLog::select('event')
+                ->distinct()
+                ->pluck('event', 'event')
+                ->map(fn ($entry) => ucfirst(__($entry)))
+                ->toArray();
+        }, function ($value) {
+            CRUD::addClause('where', 'event', $value);
+        });
 
         /**
          * Subject Model
