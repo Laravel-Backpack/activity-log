@@ -2,7 +2,9 @@
 
 namespace Backpack\ActivityLog;
 
+use Backpack\ActivityLog\Observers\ActivityObserver;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogServiceProvider extends ServiceProvider
 {
@@ -19,11 +21,7 @@ class ActivityLogServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // set backpack authguard
-        $this->booted(function () {
-            if (! config('activitylog.default_auth_driver')) {
-                config(['activitylog.default_auth_driver' => backpack_guard_name()]);
-            }
-        });
+        // set activity log observer
+        $this->booted(fn() => Activity::observe(ActivityObserver::class));
     }
 }
