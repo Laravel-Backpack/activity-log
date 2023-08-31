@@ -45,9 +45,9 @@ php artisan migrate
 
 Your existing activities should show up right away, no extra configuration needed. If your models create activity logs, click the menu item and you'll see them in the interface. 
 
-> If you haven't yet configured your models to create activity logs, read the FAQ below. We'll show you how to log all model events.
+> If you haven't yet configured your models to create activity logs, read the FAQ below. We'll show you how to easily log all model events.
 
-If you want to show links to the activities in other CrudControllers, you can do that too, by using one of the Backpack operations provided:
+If you want your CrudControllers to show links to their activities, just use one or both of the provided Backpack operations:
 - **ModelActivityOperation**: Displays a general button, allowing users to see a comprehensive list of all activities for that Model.  
 - **EntryActivityOperation**: Adds line buttons to each entry in the list, enabling users to view activity logs specific to individual entries.
 
@@ -98,25 +98,44 @@ By default, the nothing gets logged. Please configure `spatie/laravel-activitylo
 > Note: this is NOT a feature that is provided by this package. It's provided by `spatie/laravel-activitylog`.
 > But we try to help document the most common use case we have found, so it's easier for you to do it.
 
-In our experience, most applications who need logging will need to log all Eloquent events to the database. When a model is `created`, `updated`, `deleted` etc, to have an entry in the DB saying WHO did that and WHEN it happened. Here's how you can set up `spatie/laravel-activitylog` to log all model events.
+You want a new Activity registered, whenever a model is `created`, `updated`, `deleted` etc? So that there's a record of WHO did WHAT and WHEN it happened? Here's how you can set up `spatie/laravel-activitylog` to log all model events.
 
-You have two options. Please read both and decide which one is for you:
+**Step 1.** Create a new model trait at `App\Models\Traits\LogsActivity.php` with the following content:
 
-(A) On each model where you want logging:
-- use `Spatie\Activitylog\Traits\LogsActivity` on your Eloquent model;
-- define the `getActivitylogOptions()` method - [details here](https://spatie.be/docs/laravel-activitylog/v4/advanced-usage/logging-model-events) and [options here](https://spatie.be/docs/laravel-activitylog/v4/api/log-options);
+```php
+<?php
 
-(B)  On each model where you want logging:
-- use `Backpack\ActivityLog\Traits\LogsActivity` on your Eloquent model; our trait extends `Spatie\Activitylog\Traits\LogsActivity` and defines a `getActivitylogOptions()` method with some reasonable defaults, so you don't have any second step;
-  
+namespace App\Models\Traits;
+
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity as OriginalLogsActivity;
+
+trait LogsActivity
+{
+    use OriginalLogsActivity;
+
+    /**
+     * Spatie Log Options
+     * By default will log only the changes between fillables
+     *
+     * @return LogOptions
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logAll()->logOnlyDirty();
+    }
+}
+```
+
+**Step 2.** Use that trait on all Models where you want all events logged:
 
 ```diff
 <?php
 
 namespace App\Models;
 
++use App\Models\Traits\LogsActivity;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-+use Backpack\ActivityLog\Traits\LogsActivity;
 
 class Article extends Model
 {
@@ -124,6 +143,9 @@ class Article extends Model
 +   use LogsActivity;
     ...
 ```
+
+Notice that this trait extends the default `Spatie\Activitylog\Traits\LogsActivity` and defines the `getActivitylogOptions()` method providing some reasonable defaults. If you want to customize, see  [details here](https://spatie.be/docs/laravel-activitylog/v4/advanced-usage/logging-model-events) and [options here](https://spatie.be/docs/laravel-activitylog/v4/api/log-options).
+  
 
 #### How do you customize what gets logged?
 
