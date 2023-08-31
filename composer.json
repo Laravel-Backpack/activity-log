@@ -19,7 +19,7 @@
         "Laravel", "Backpack", "Backpack for Laravel", "Backpack Addon", "ActivityLog"
     ],
     "require": {
-        "backpack/crud": "^6.0|^5.3.13",
+        "backpack/crud": "^6.0",
         "spatie/laravel-activitylog": "^4.7"
     },
     "require-dev": {
