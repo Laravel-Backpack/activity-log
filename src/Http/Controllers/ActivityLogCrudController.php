@@ -7,6 +7,7 @@ use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -45,10 +46,20 @@ class ActivityLogCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::addColumn([
+            'name' => 'causer_type',
+            'label' => ucfirst(__('backpack.activity-log::activity_log.causer_model')),
+            'type' => 'text',
+            'value' => fn ($entry) => $entry->causer ? Str::of(get_class($entry->causer))->afterLast('\\') : '',
+            'wrapper' => [
+                'title' => fn ($crud, $column, $entry) => $entry->causer ? get_class($entry->causer) : '',
+            ],
+        ]);
+
+        CRUD::addColumn([
             'name' => 'causer',
             'label' => ucfirst(__('backpack.activity-log::activity_log.causer')),
             'type' => 'text',
-            'value' => fn($entry) => $entry->causer ? $entry->causer->{$entry->causer->identifiableAttribute()} : '',
+            'value' => fn($entry) => $entry->causer && method_exists($entry->causer, 'identifiableAttribute') ? $entry->causer->{$entry->causer->identifiableAttribute()} : '',
             'wrapper' => [
                 'href' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->causer) ?? '',
                 'element' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->causer) ? 'a' : 'span',
@@ -84,7 +95,7 @@ class ActivityLogCrudController extends CrudController
             'name' => 'subject',
             'label' => ucfirst(__('backpack.activity-log::activity_log.subject')),
             'type' => 'text',
-            'value' => fn($entry) => $entry->subject ? $entry->subject->{$entry->subject->identifiableAttribute()} : '',
+            'value' => fn($entry) => $entry->subject && method_exists($entry->subject, 'identifiableAttribute') ? $entry->subject->{$entry->subject->identifiableAttribute()} : '',
             'wrapper' => [
                 'href' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->subject) ?? '',
                 'element' => fn($crud, $column, $entry) => $this->getEntryUrl($entry->subject) ? 'a' : 'span',
@@ -107,6 +118,8 @@ class ActivityLogCrudController extends CrudController
     protected function setupShowOperation()
     {
         $this->setupListOperation();
+
+        CRUD::set('show.contentClass', 'col-md-12');
 
         CRUD::addColumn([
             'name' => 'causer_type',
@@ -142,23 +155,6 @@ class ActivityLogCrudController extends CrudController
     public function setupFilters()
     {
         /**
-         * Event
-         */
-        CRUD::addFilter([
-            'name' => 'event',
-            'type' => 'select2',
-            'label' => ucfirst(__('backpack.activity-log::activity_log.event')),
-        ], function () {
-            return ActivityLog::select('event')
-                ->distinct()
-                ->pluck('event', 'event')
-                ->map(fn($entry) => ucfirst(__($entry)))
-                ->toArray();
-        }, function ($value) {
-            CRUD::addClause('where', 'event', $value);
-        });
-
-        /**
          * Causer Model
          */
         CRUD::addFilter([
@@ -169,7 +165,7 @@ class ActivityLogCrudController extends CrudController
             return ActivityLog::select('causer_type')
                 ->distinct()
                 ->pluck('causer_type', 'causer_type')
-                ->map(fn($entry) => Str::of($entry)->afterLast('\\'))
+                ->map(fn($entry) => Str::of($entry)->afterLast('\\')->ucfirst())
                 ->toArray();
         }, function ($value) {
             CRUD::addClause('where', 'causer_type', $value);
@@ -191,6 +187,23 @@ class ActivityLogCrudController extends CrudController
             });
 
         /**
+         * Event
+         */
+        CRUD::addFilter([
+            'name' => 'event',
+            'type' => 'select2',
+            'label' => ucfirst(__('backpack.activity-log::activity_log.event')),
+        ], function () {
+            return ActivityLog::select('event')
+                ->distinct()
+                ->pluck('event', 'event')
+                ->map(fn ($entry) => ucfirst(__($entry)))
+                ->toArray();
+        }, function ($value) {
+            CRUD::addClause('where', 'event', $value);
+        });
+
+        /**
          * Subject Model
          */
         CRUD::addFilter([
@@ -201,7 +214,7 @@ class ActivityLogCrudController extends CrudController
             return ActivityLog::select('subject_type')
                 ->distinct()
                 ->pluck('subject_type', 'subject_type')
-                ->map(fn($entry) => Str::of($entry)->afterLast('\\'))
+                ->map(fn($entry) => Str::of($entry)->afterLast('\\')->ucfirst())
                 ->toArray();
         }, function ($value) {
             CRUD::addClause('where', 'subject_type', $value);
@@ -295,11 +308,18 @@ class ActivityLogCrudController extends CrudController
             ->distinct()
             ->pluck("{$morphField}_type")
             ->map(function ($type) use ($term) {
-                $model = new $type();
+                $typeClass = Relation::getMorphedModel($type) ?? $type;
+
+                if (! class_exists($typeClass)) {
+                    return;
+                }
+
+                $model = new $typeClass();
                 return $model
                     ->where($model->identifiableAttribute(), 'like', "%{$term}%")
-                    ->pluck('name', 'id')
-                    ->mapWithKeys(fn($value, $id) => ["$type,$id" => $value])
+                    ->limit(5)
+                    ->pluck($model->identifiableAttribute(), $model->getKeyName())
+                    ->mapWithKeys(fn($value, $id) => ["$type,$id" => Str::limit($value, 28)])
                     ->filter();
             })
             ->flatMap(fn($entry) => $entry)
