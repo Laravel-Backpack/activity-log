@@ -4,6 +4,9 @@ return [
     'activity_log' => 'activity log',
     'activity_logs' => 'activity logs',
 
+    'activity_log_button_causer' => 'caused activity',
+    'activity_log_button_subject' => 'activity',
+
     'causer' => 'causer',
     'subject' => 'subject',
     'causer_model' => 'causer model',

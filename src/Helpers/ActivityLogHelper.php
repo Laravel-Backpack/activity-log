@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ActivityLogHelper
 {
+    private $options = [
+        ActivityLog::CAUSER => 'causer',
+        ActivityLog::SUBJECT => 'subject',
+    ];
+
     /**
      * Generates a button url for the views
      *
@@ -22,12 +27,7 @@ class ActivityLogHelper
 
         $keys ??= ActivityLog::SUBJECT;
 
-        $options = [
-            ActivityLog::CAUSER => 'causer',
-            ActivityLog::SUBJECT => 'subject',
-        ];
-
-        foreach ($options as $option => $key) {
+        foreach ($this->options as $option => $key) {
             $query['combined'] = true;
 
             if ($keys &$option) {
@@ -47,5 +47,19 @@ class ActivityLogHelper
         }
 
         return backpack_url('activity-log/?'.http_build_query($query));
+    }
+
+    /**
+     * Generates a button title for the views
+     *
+     * @param integer|null $keys
+     * @return string
+     */
+    public function getButtonTitle(?int $keys): string
+    {
+        $keys ??= ActivityLog::SUBJECT;
+        $key = $this->options[$keys === ActivityLog::CAUSER ? ActivityLog::CAUSER : ActivityLog::SUBJECT];
+
+        return ucfirst(__("backpack.activity-log::activity_log.activity_log_button_$key"));
     }
 }
