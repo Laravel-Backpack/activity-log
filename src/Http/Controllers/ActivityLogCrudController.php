@@ -6,6 +6,7 @@ use Backpack\ActivityLog\Models\ActivityLog;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -144,6 +145,8 @@ class ActivityLogCrudController extends CrudController
      */
     public function setupFilters()
     {
+        $combined = request()->has('combined');
+
         /**
          * Event
          */
@@ -162,6 +165,21 @@ class ActivityLogCrudController extends CrudController
         });
 
         /**
+         * Date Range
+         */
+        CRUD::addFilter([
+            'type' => 'date_range',
+            'name' => 'date_range',
+            'label' => ucfirst(__('backpack.activity-log::activity_log.date')),
+        ],
+            false,
+            function ($value) {
+                $dates = json_decode($value);
+                CRUD::addClause('where', 'created_at', '>=', $dates->from);
+                CRUD::addClause('where', 'created_at', '<=', $dates->to.' 23:59:59');
+            });
+
+        /**
          * Causer Model
          */
         CRUD::addFilter([
@@ -174,7 +192,11 @@ class ActivityLogCrudController extends CrudController
                 ->pluck('causer_type', 'causer_type')
                 ->map(fn($entry) => Str::of($entry)->afterLast('\\')->ucfirst())
                 ->toArray();
-        }, function ($value) {
+        }, function ($value) use ($combined) {
+            if ($combined) {
+                return;
+            }
+
             CRUD::addClause('where', 'causer_type', $value);
         });
 
@@ -187,7 +209,11 @@ class ActivityLogCrudController extends CrudController
             'label' => ucfirst(__('backpack.activity-log::activity_log.causer')),
         ],
             backpack_url('activity-log/causer'),
-            function ($value) {
+            function ($value) use ($combined) {
+                if ($combined) {
+                    return;
+                }
+
                 [$type, $id] = explode(',', $value);
                 CRUD::addClause('where', 'causer_type', $type);
                 CRUD::addClause('where', 'causer_id', $id);
@@ -206,7 +232,11 @@ class ActivityLogCrudController extends CrudController
                 ->pluck('subject_type', 'subject_type')
                 ->map(fn($entry) => Str::of($entry)->afterLast('\\')->ucfirst())
                 ->toArray();
-        }, function ($value) {
+        }, function ($value) use ($combined) {
+            if ($combined) {
+                return;
+            }
+
             CRUD::addClause('where', 'subject_type', $value);
         });
 
@@ -219,25 +249,52 @@ class ActivityLogCrudController extends CrudController
             'label' => ucfirst(__('backpack.activity-log::activity_log.subject')),
         ],
             backpack_url('activity-log/subject'),
-            function ($value) {
+            function ($value) use ($combined) {
+                if ($combined) {
+                    return;
+                }
+
                 [$type, $id] = explode(',', $value);
                 CRUD::addClause('where', 'subject_type', $type);
                 CRUD::addClause('where', 'subject_id', $id);
             });
 
-        /**
-         * Date Range
-         */
+        // OR
         CRUD::addFilter([
-            'type' => 'date_range',
-            'name' => 'date_range',
-            'label' => ucfirst(__('backpack.activity-log::activity_log.date')),
+            'name' => 'combined',
+            'type' => 'simple',
+            'label' => 'Or *',
         ],
-            false,
+            null,
             function ($value) {
-                $dates = json_decode($value);
-                CRUD::addClause('where', 'created_at', '>=', $dates->from);
-                CRUD::addClause('where', 'created_at', '<=', $dates->to.' 23:59:59');
+                CRUD::addClause('where', function (Builder $query) {
+                    if (request()->has('subject_type')) {
+                        $query->orWhere('subject_type', request()->subject_type);
+                    }
+                    if (request()->has('causer_type')) {
+                        $query->orWhere('causer_type', request()->causer_type);
+                    }
+                });
+
+                // entry
+                CRUD::addClause('where', function (Builder $query) {
+                    if (request()->has('subject')) {
+                        [$type, $id] = explode(',', request()->subject);
+                        $query->orWhere(fn($subQuery) =>
+                            $subQuery
+                                ->where('subject_type', $type)
+                                ->where('subject_id', $id)
+                        );
+                    }
+                    if (request()->has('causer')) {
+                        [$type, $id] = explode(',', request()->causer);
+                        $query->orWhere(fn($subQuery) =>
+                            $subQuery
+                                ->where('causer_type', $type)
+                                ->where('causer_id', $id)
+                        );
+                    }
+                });
             });
     }
 

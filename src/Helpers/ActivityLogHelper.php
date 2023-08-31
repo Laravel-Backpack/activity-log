@@ -28,7 +28,7 @@ class ActivityLogHelper
         ];
 
         foreach ($options as $option => $key) {
-            $query['combined'] = true;
+            $query['combined'] = 'true';
 
             if ($keys &$option) {
                 if ($model->id) {
