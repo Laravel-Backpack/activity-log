@@ -2,6 +2,7 @@
 
 namespace Backpack\ActivityLog\Http\Controllers;
 
+use Backpack\ActivityLog\Enums\ActivityLogEnum;
 use Backpack\ActivityLog\Models\ActivityLog;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -18,8 +19,6 @@ use Illuminate\Support\Str;
  */
 class ActivityLogCrudController extends CrudController
 {
-    const CAUSER = 'causer';
-    const SUBJECT = 'subject';
     const KNOWN_EVENTS = ['created', 'updated', 'deleted', 'restored'];
 
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
@@ -49,9 +48,9 @@ class ActivityLogCrudController extends CrudController
             'name' => 'causer_type',
             'label' => ucfirst(__('backpack.activity-log::activity_log.causer_model')),
             'type' => 'text',
-            'value' => fn ($entry) => $entry->causer ? Str::of(get_class($entry->causer))->afterLast('\\') : '',
+            'value' => fn($entry) => $entry->causer ? Str::of(get_class($entry->causer))->afterLast('\\') : '',
             'wrapper' => [
-                'title' => fn ($crud, $column, $entry) => $entry->causer ? get_class($entry->causer) : '',
+                'title' => fn($crud, $column, $entry) => $entry->causer ? get_class($entry->causer) : '',
             ],
         ]);
 
@@ -197,7 +196,7 @@ class ActivityLogCrudController extends CrudController
             return ActivityLog::select('event')
                 ->distinct()
                 ->pluck('event', 'event')
-                ->map(fn ($entry) => ucfirst(__($entry)))
+                ->map(fn($entry) => ucfirst(__($entry)))
                 ->toArray();
         }, function ($value) {
             CRUD::addClause('where', 'event', $value);
@@ -266,7 +265,7 @@ class ActivityLogCrudController extends CrudController
         try {
             $entity = Str::of($entry->getTable())->singular();
             return url(route("$entity.show", ['id' => $entry->getKey()]));
-        } catch (Exception $e) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -279,7 +278,7 @@ class ActivityLogCrudController extends CrudController
      */
     public function getCauserOptions(Request $request): array
     {
-        return $this->getMorphOptions($request, self::CAUSER);
+        return $this->getMorphOptions($request, ActivityLogEnum::CAUSER);
     }
 
     /**
@@ -290,23 +289,24 @@ class ActivityLogCrudController extends CrudController
      */
     public function getSubjectOptions(Request $request): array
     {
-        return $this->getMorphOptions($request, self::SUBJECT);
+        return $this->getMorphOptions($request, ActivityLogEnum::SUBJECT);
     }
 
     /**
      * Get morph options for ajax requests
      *
      * @param Request $request
-     * @param string $morphField 'causer' or 'subject'
+     * @param ActivityLogEnum $morphField 'causer' or 'subject'
      * @return array
      */
-    private function getMorphOptions(Request $request, string $morphField): array
+    private function getMorphOptions(Request $request, ActivityLogEnum $morphField): array
     {
         $term = $request->input('term');
+        $morphFieldName = strtolower($morphField->name).'_type';
 
-        return ActivityLog::select("{$morphField}_type")
+        return ActivityLog::select($morphFieldName)
             ->distinct()
-            ->pluck("{$morphField}_type")
+            ->pluck($morphFieldName)
             ->map(function ($type) use ($term) {
                 $typeClass = Relation::getMorphedModel($type) ?? $type;
 
