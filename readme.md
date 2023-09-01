@@ -1,5 +1,7 @@
 # Activity Log
 
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Total Downloads][ico-downloads]][link-downloads]
 [![The Whole Fruit Manifesto](https://img.shields.io/badge/writing%20standard-the%20whole%20fruit-brightgreen)](https://github.com/the-whole-fruit/manifesto)
 
 Ever wanted to see WHO changed WHAT and WHEN inside your app? Want to remember all the DB changes your users have done? Well... this package doesn't do that. [`spatie/laravel-activitylog`](https://github.com/spatie/laravel-activitylog) does, and does it very well. This package adds a web interface for it, for projects using [Backpack for Laravel](https://backpackforlaravel.com/). It gives your admin/superadmin the ability to see 
@@ -219,5 +221,8 @@ This project was released under MIT License, so you can install it on top of any
 
 [ico-version]: https://img.shields.io/packagist/v/backpack/activity-log.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/backpack/activity-log.svg?style=flat-square
+
+[link-packagist]: https://packagist.org/packages/backpack/activity-log
+[link-downloads]: https://packagist.org/packages/backpack/activity-log
 [link-author]: https://github.com/backpack
 [link-contributors]: ../../contributors
