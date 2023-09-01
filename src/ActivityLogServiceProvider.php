@@ -2,6 +2,7 @@
 
 namespace Backpack\ActivityLog;
 
+use Backpack\ActivityLog\Console\Commands\CreateTrait;
 use Backpack\ActivityLog\Observers\ActivityObserver;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Activitylog\Models\Activity;
@@ -12,7 +13,9 @@ class ActivityLogServiceProvider extends ServiceProvider
 
     protected $vendorName = 'backpack';
     protected $packageName = 'activity-log';
-    protected $commands = [];
+    protected $commands = [
+        CreateTrait::class,
+    ];
 
     /**
      * Register any application services.
