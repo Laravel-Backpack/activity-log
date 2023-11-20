@@ -154,6 +154,10 @@ class ActivityLogCrudController extends CrudController
      */
     public function setupFilters()
     {
+        if(! backpack_pro()) {
+            return;
+        }
+        
         /**
          * Causer Model
          */
