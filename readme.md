@@ -17,7 +17,7 @@ How does it all work? Well:
 
 ![](https://user-images.githubusercontent.com/1032474/205863022-827f3248-a9f3-4d05-896f-5fa7a40227be.gif)
 
-**NOTE**: The filters are a [Backpack\PRO](https://backpackforlaravel.com/products/pro-for-one-project) feature. If you don't have that package the filters wont be available.
+**NOTE**: The filters are a [Backpack\PRO](https://backpackforlaravel.com/products/pro-for-one-project) feature. If you don't have that package the filters won't be available.
 ## Demo
 
 Try it right now, in [our online demo](https://demo.backpackforlaravel.com/admin/activity-log).  Edit some entities, and check the [activity logs](https://demo.backpackforlaravel.com/admin/activity-log).
