@@ -2,49 +2,37 @@
 
 namespace Backpack\ActivityLog\Helpers;
 
-use Backpack\ActivityLog\Models\ActivityLog;
+use Backpack\ActivityLog\Enums\ActivityLogEnum;
 use Illuminate\Database\Eloquent\Model;
 
 class ActivityLogHelper
 {
-    private $options = [
-        ActivityLog::CAUSER => 'causer',
-        ActivityLog::SUBJECT => 'subject',
-    ];
-
     /**
      * Generates a button url for the views
      *
      * @param Model $entry
-     * @param string $key
-     * @param boolean $isEntry
+     * @param array<ActivityLogEnum>|ActivityLogEnum|null $keys
      * @return string
      */
-    public function getButtonUrl(Model $model, ?int $keys): string
+    public function getButtonUrl(Model $model, array | ActivityLogEnum | null $keys): string
     {
-        $query = [];
-        $class = $model->getMorphClass();
+        $query = collect($keys ?? ActivityLogEnum::SUBJECT)
+            ->map(fn($key) => is_int($key) ? ActivityLogEnum::from($key) : $key)
+            ->mapWithKeys(function (ActivityLogEnum $key) use ($model) {
+                $class = $model->getMorphClass();
+                $key = strtolower($key->name);
 
-        $keys ??= ActivityLog::SUBJECT;
-
-        foreach ($this->options as $option => $key) {
-            $query['combined'] = true;
-
-            if ($keys &$option) {
-                if ($model->id) {
-                    $query = [
-                        ...$query,
-                        $key => join(',', [
-                            $class,
-                            $model->id,
-                        ]),
-                        "{$key}_text" => $model->{$model->identifiableAttribute()} ?? '',
-                    ];
-                } else {
-                    $query["{$key}_model"] = $class;
-                }
-            }
-        }
+                return $model->id ? [
+                    $key => join(',', [
+                        $class,
+                        $model->id,
+                    ]),
+                    "{$key}_text" => $model->{$model->identifiableAttribute()} ?? '',
+                ] : [
+                    "{$key}_model" => $class,
+                ];
+            })
+            ->toArray();
 
         return backpack_url('activity-log/?'.http_build_query($query));
     }
@@ -52,14 +40,22 @@ class ActivityLogHelper
     /**
      * Generates a button title for the views
      *
-     * @param integer|null $keys
+     * @param array<ActivityLogEnum>|ActivityLogEnum|null $keys
      * @return string
      */
-    public function getButtonTitle(?int $keys): string
+    public function getButtonTitle(array | ActivityLogEnum | null $keys): string
     {
-        $keys ??= ActivityLog::SUBJECT;
-        $key = $this->options[$keys === ActivityLog::CAUSER ? ActivityLog::CAUSER : ActivityLog::SUBJECT];
+        $keys = collect($keys)
+            ->map(fn($key) => is_int($key) ? ActivityLogEnum::from($key) : $key)
+            ->toArray();
 
-        return ucfirst(__("backpack.activity-log::activity_log.activity_log_button_$key"));
+        // default to subject key
+        $key = ActivityLogEnum::SUBJECT->name;
+
+        if (in_array(ActivityLogEnum::CAUSER, $keys)) {
+            $key = ActivityLogEnum::CAUSER->name;
+        }
+
+        return ucfirst(__('backpack.activity-log::activity_log.activity_log_button_'.strtolower($key)));
     }
 }
