@@ -99,6 +99,21 @@ class ArticleCrudController extends CrudController
     ...
 ```
 
+#### Linking options - Subject / Causer
+
+`ModelActivityOperation` and `EntryActivityOperation` buttons will point to the Activity log page with the current model as the **subject**. If your model is a **causer** (the one who performed the action, most of the times `User` model) you can set the operation options to causer.
+
+```diff
+class ArticleCrudController extends CrudController
+{
+    ...
+    public function setup()
+    {
+        ...
++        CRUD::set('activity-log.options', ActivityLogEnum::CAUSER);
+    }
+```
+
 ## FAQ
 
 #### What gets logged by default?
