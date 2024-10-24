@@ -11,12 +11,12 @@ return [
     'event' => 'Ereignis',
     'date' => 'Zeitpunkt',
     'changes' => 'Änderungen',
-    'key' => 'Primärschlüssel',
-    'previous_value' => 'vorherige Werte',
-    'new_value' => 'Neue Werte',
+    'key' => 'Schlüssel',
+    'previous_value' => 'Alter Wert',
+    'new_value' => 'Neuer Wert',
 
     'created' => 'erstellt',
     'updated' => 'geändert',
     'deleted' => 'gelöscht',
-    'restored' => 'weiderhergestellt',
+    'restored' => 'wiederhergestellt',
 ];
