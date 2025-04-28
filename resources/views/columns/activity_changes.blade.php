@@ -13,65 +13,39 @@ $deleted = $old && !isset($values['attributes']);
         @endif
         <th>{{ ucfirst(__('backpack.activity-log::activity_log.new_value')) }}</th>
     </tr>
-    @if ($deleted)
-        @foreach ($values['old'] ?? [] as $key => $new)
+    @php
+        $entries = $deleted ? ($values['old'] ?? []) : ($values['attributes'] ?? []);
+    @endphp
+    
+    @foreach ($entries as $key => $new)
+        @if ($deleted || !in_array($key, ['id', 'deleted_at']))
             <tr>
                 <td class="font-weight-bold">{{ str_replace('_', ' ', ucfirst(__($key))) }}</td>
                 @if ($old)
-                    <td class="{{ $values['old'][$key] != $new ? 'text-danger' : '' }}">
-                        @if (is_array($values['old'][$key]))
+                    <td class="{{ isset($values['old'][$key]) && $values['old'][$key] != $new ? 'text-danger' : '' }}">
+                        @if (isset($values['old'][$key]) && is_array($values['old'][$key]))
                             <ul class="pl-3" style="list-style: circle">
                                 @foreach ($values['old'][$key] as $attribute => $value)
                                     <li><strong>{{ $attribute }}</strong>: {{ $value }}</li>
                                 @endforeach
                             </ul>
                         @else
-                            {{ $values['old'][$key] }}
+                            {{ $values['old'][$key] ?? '' }}
                         @endif
                     </td>
                 @endif
-                <td class="{{ isset($values['old']) && $values['old'][$key] != $new ? 'text-success' : '' }}">
+                <td class="{{ isset($values['old'][$key]) && $values['old'][$key] != $new ? 'text-success' : '' }}">
                     @if (is_array($new))
                         <ul class="pl-3" style="list-style: circle">
                             @foreach ($new as $attribute => $value)
                                 <li><strong>{{ $attribute }}</strong>: {{ $value }}</li>
                             @endforeach
                         </ul>
+                    @else
+                        {{ $new }}
                     @endif
                 </td>
             </tr>
-        @endforeach
-    @else
-        @foreach ($values['attributes'] ?? [] as $key => $new)
-            @if (!in_array($key, ['id', 'deleted_at']))
-                <tr>
-                    <td class="font-weight-bold">{{ str_replace('_', ' ', ucfirst(__($key))) }}</td>
-                    @if ($old)
-                        <td class="{{ $values['old'][$key] != $new ? 'text-danger' : '' }}">
-                            @if (is_array($values['old'][$key]))
-                                <ul class="pl-3" style="list-style: circle">
-                                    @foreach ($values['old'][$key] as $attribute => $value)
-                                        <li><strong>{{ $attribute }}</strong>: {{ $value }}</li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                {{ $values['old'][$key] }}
-                            @endif
-                        </td>
-                    @endif
-                    <td class="{{ isset($values['old']) && $values['old'][$key] != $new ? 'text-success' : '' }}">
-                        @if (is_array($new))
-                            <ul class="pl-3" style="list-style: circle">
-                                @foreach ($new as $attribute => $value)
-                                    <li><strong>{{ $attribute }}</strong>: {{ $value }}</li>
-                                @endforeach
-                            </ul>
-                        @else
-                            {{ $new }}
-                        @endif
-                    </td>
-                </tr>
-            @endif
-        @endforeach
-    @endif
+        @endif
+    @endforeach
 </table>
