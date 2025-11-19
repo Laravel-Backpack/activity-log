@@ -19,10 +19,9 @@ use Illuminate\Support\Str;
  */
 class ActivityLogCrudController extends CrudController
 {
-    const KNOWN_EVENTS = ['created', 'updated', 'deleted', 'restored'];
-
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    public const KNOWN_EVENTS = ['created', 'updated', 'deleted', 'restored'];
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -32,7 +31,7 @@ class ActivityLogCrudController extends CrudController
     public function setup()
     {
         CRUD::setModel(ActivityLog::class);
-        CRUD::setRoute(config('backpack.base.route_prefix').'/activity-log');
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/activity-log');
         CRUD::setEntityNameStrings(__('backpack.activity-log::activity_log.activity_log'), __('backpack.activity-log::activity_log.activity_logs'));
     }
 
@@ -84,9 +83,19 @@ class ActivityLogCrudController extends CrudController
             'name' => 'subject_type',
             'label' => ucfirst(__('backpack.activity-log::activity_log.subject_model')),
             'type' => 'text',
-            'value' => fn($entry) => $entry->subject ? Str::of(get_class($entry->subject))->afterLast('\\') : '',
+            'value' => function ($entry) {
+                if ($entry->event === 'backpack.activity-log::activity_log.deleted') {
+                    return Str::of($entry->subject_type)->afterLast('\\');
+                }
+                return $entry->subject ? Str::of(get_class($entry->subject))->afterLast('\\') : '';
+            },
             'wrapper' => [
-                'title' => fn($crud, $column, $entry) => $entry->subject ? get_class($entry->subject) : '',
+                'title' => function ($crud, $column, $entry) {
+                    if ($entry->event === 'backpack.activity-log::activity_log.deleted') {
+                        return $entry->subject_type;
+                    }
+                    return $entry->subject ? get_class($entry->subject) : '';
+                },
             ],
         ]);
 
@@ -131,7 +140,12 @@ class ActivityLogCrudController extends CrudController
         ])->beforeColumn('causer');
 
         CRUD::setColumnDetails('subject_type', [
-            'value' => fn($entry) => $entry->subject ? get_class($entry->subject) : '',
+            'value' => function ($entry) {
+                if ($entry->event === 'backpack.activity-log::activity_log.deleted') {
+                    return Str::of($entry->subject_type);
+                }
+                return $entry->subject ? get_class($entry->subject) : '';
+            },
             'wrapper' => [
                 'class' => 'bg-blue',
                 'element' => 'kbd',
@@ -153,10 +167,10 @@ class ActivityLogCrudController extends CrudController
      */
     public function setupFilters()
     {
-        if(! backpack_pro()) {
+        if (! backpack_pro()) {
             return;
         }
-        
+
         /**
          * Causer Model
          */
@@ -177,17 +191,19 @@ class ActivityLogCrudController extends CrudController
         /**
          * Causer Entry
          */
-        CRUD::addFilter([
-            'name' => 'causer',
-            'type' => 'select2_ajax',
-            'label' => ucfirst(__('backpack.activity-log::activity_log.causer')),
-        ],
+        CRUD::addFilter(
+            [
+                'name' => 'causer',
+                'type' => 'select2_ajax',
+                'label' => ucfirst(__('backpack.activity-log::activity_log.causer')),
+            ],
             backpack_url('activity-log/causer'),
             function ($value) {
                 [$type, $id] = explode(',', $value);
                 CRUD::addClause('where', 'causer_type', $type);
                 CRUD::addClause('where', 'causer_id', $id);
-            });
+            }
+        );
 
         /**
          * Event
@@ -226,32 +242,36 @@ class ActivityLogCrudController extends CrudController
         /**
          * Subject Entry
          */
-        CRUD::addFilter([
-            'name' => 'subject',
-            'type' => 'select2_ajax',
-            'label' => ucfirst(__('backpack.activity-log::activity_log.subject')),
-        ],
+        CRUD::addFilter(
+            [
+                'name' => 'subject',
+                'type' => 'select2_ajax',
+                'label' => ucfirst(__('backpack.activity-log::activity_log.subject')),
+            ],
             backpack_url('activity-log/subject'),
             function ($value) {
                 [$type, $id] = explode(',', $value);
                 CRUD::addClause('where', 'subject_type', $type);
                 CRUD::addClause('where', 'subject_id', $id);
-            });
+            }
+        );
 
         /**
          * Date Range
          */
-        CRUD::addFilter([
-            'type' => 'date_range',
-            'name' => 'date_range',
-            'label' => ucfirst(__('backpack.activity-log::activity_log.date')),
-        ],
+        CRUD::addFilter(
+            [
+                'type' => 'date_range',
+                'name' => 'date_range',
+                'label' => ucfirst(__('backpack.activity-log::activity_log.date')),
+            ],
             false,
             function ($value) {
                 $dates = json_decode($value);
                 CRUD::addClause('where', 'created_at', '>=', $dates->from);
-                CRUD::addClause('where', 'created_at', '<=', $dates->to.' 23:59:59');
-            });
+                CRUD::addClause('where', 'created_at', '<=', $dates->to . ' 23:59:59');
+            }
+        );
     }
 
     /**
@@ -306,7 +326,7 @@ class ActivityLogCrudController extends CrudController
     private function getMorphOptions(Request $request, ActivityLogEnum $morphField): array
     {
         $term = $request->input('term');
-        $morphFieldName = strtolower($morphField->name).'_type';
+        $morphFieldName = strtolower($morphField->name) . '_type';
 
         return ActivityLog::select($morphFieldName)
             ->distinct()
